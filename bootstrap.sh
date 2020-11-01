@@ -1,9 +1,9 @@
 #!/bin/sh
-TMP_DIR=$(mktemp -d --suffix='.vv')
+TMP_DIR=$(mktemp -d --suffix='.clip')
 
 cd $TMP_DIR
-git clone https://github.com/joshuacox/vv.git
-cd vv
+git clone https://github.com/joshuacox/clip.git
+cd clip
 git pull
 sudo make install
 cd
