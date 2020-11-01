@@ -14,4 +14,5 @@ But I recommend you clone the repo and read it first, it’s pretty short
 then at your leisure
 
 `cp clip /usr/local/bin`
+
 or somewhere in your path
