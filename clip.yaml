@@ -1,4 +1,4 @@
-- name: dockersupport 
-  hosts: vv
+- name: install
+  hosts: clip
   tasks:
-  - script: bootstrapvv.sh
+  - script: bootstrap.sh
