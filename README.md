@@ -6,7 +6,7 @@ Clip is a wrapper around xclip, because I am lazy and there is way too many char
 Trust me?
 
 ```
-curl -sL https:git.io/clipinstall | bash
+curl -sL https://git.io/clipinstall | bash
 ```
 
 But I recommend you clone the repo and read it first, it’s pretty short
