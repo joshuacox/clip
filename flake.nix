@@ -1,6 +1,6 @@
 {
   description = "A flake for building clip";
-  inputs.nixpkgs.url = github:NixOS/nixpkgs/nixos-23.11;
+  inputs.nixpkgs.url = github:NixOS/nixpkgs/nixos-24.05;
 
   outputs = {
     self,
@@ -14,7 +14,7 @@
     ];
     forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f system);
     suffix-version = version: attrs: nixpkgs.lib.mapAttrs' (name: value: nixpkgs.lib.nameValuePair (name + version) value) attrs;
-    suffix-stable = suffix-version "-23_11";
+    suffix-stable = suffix-version "-24.05";
   in {
     packages.x86_64-linux.default = self.packages.x86_64-linux.clip;
     packages.x86_64-linux.clip =
