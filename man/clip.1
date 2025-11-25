@@ -1,0 +1,48 @@
+.TH CLIP 1 "November 2025" "clip 1.0" "User Commands"
+.SH NAME
+clip \- copy data to the X clipboard using xclip
+.SH SYNOPSIS
+.B clip
+.RI [ file ... ]
+.SH DESCRIPTION
+The
+.B clip
+script reads data either from the specified file(s) or from standard input and copies it to the X clipboard using the
+.B xclip
+utility. It first checks that
+.B xclip
+is installed; if not, it exits with an error message.
+
+If a filename is provided and the file exists, its contents are sent to
+.B xclip
+. If no arguments are given, the script reads from standard input (when data is piped in). If neither a file nor piped data is provided, it prints an error and exits with status 1.
+.SH OPTIONS
+None. The script determines its behavior based on the presence of arguments and whether standard input is a terminal.
+.SH EXAMPLES
+.TP
+Copy the contents of a file to the clipboard:
+.nf
+$ clip myfile.txt
+.fi
+.TP
+Pipe command output to the clipboard:
+.nf
+$ ls -l | clip
+.fi
+.TP
+Copy multiple files (concatenated) to the clipboard:
+.nf
+$ clip file1.txt file2.txt
+.fi
+.SH EXIT STATUS
+.TP
+0
+Successful copy to clipboard.
+.TP
+1
+Error (e.g., xclip not found, file not found, or no data provided).
+.SH SEE ALSO
+.BR xclip (1),
+.BR xsel (1)
+.SH AUTHOR
+Written by the clip script author.
