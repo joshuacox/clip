@@ -1,10 +1,18 @@
 #!/bin/sh
-TMP_DIR=$(mktemp -d --suffix='.clip')
+THIS_NAME=clip
+THIS_GH=joshuacox
+THIS_BRANCH=master
+TMP_DIR=$(mktemp -d --suffix='.vv')
+cleanup_func () {
+  echo rm -Rf ${TMP}
+}
+trap cleanup_func EXIT
 
 cd $TMP_DIR
-git clone https://github.com/joshuacox/clip.git
-cd clip
-git pull
+curl -L -o ${THIS_NAME}-${THIS_BRANCH}.zip https://github.com/${THIS_GH}/${THIS_NAME}/archive/refs/heads/${THIS_BRANCH}.zip
+unzip ${THIS_NAME}-${THIS_BRANCH}.zip
+cd ${THIS_NAME}-${THIS_BRANCH}
+cmake .
+make
 sudo make install
 cd
-rm -Rf $TMP_DIR
