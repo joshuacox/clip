@@ -1,5 +1,5 @@
 .POSIX:
-.PHONY: all install uninstall play test
+.PHONY: all install uninstall play test site-build site-dev
 
 PREFIX ?= /usr/local
 BINDIR ?= $(PREFIX)/bin
@@ -23,3 +23,9 @@ play:
 
 test:
 	./tests/test_clip.sh
+
+site-build:
+	cd site && npm run build
+
+site-dev:
+	cd site && npm run dev
