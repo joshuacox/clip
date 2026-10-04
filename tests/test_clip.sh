@@ -6,6 +6,7 @@ echo "Running clip test suite..."
 # 1. Syntax check
 dash -n clip bootstrap.sh
 bash -n clip bootstrap.sh
+bash -n completions/bash/clip
 echo "✓ Shell syntax valid in dash and bash"
 
 # 2. Help and Version check
@@ -47,6 +48,15 @@ if [ "$P2" != "Line without newline" ]; then
 fi
 echo "✓ Trim newline (-n)"
 
+# Test Clear buffer (-c)
+./clip -c
+P_CLEARED=$(./clip -p)
+if [ -n "$P_CLEARED" ]; then
+  echo "FAIL: Expected empty clipboard after -c, got '$P_CLEARED'" >&2
+  exit 1
+fi
+echo "✓ Clear buffer (-c)"
+
 # Test File copy
 echo "file content 1" > "$TEST_DIR/f1.txt"
 echo "file content 2" > "$TEST_DIR/f2.txt"
@@ -58,6 +68,15 @@ if [ "$P3" != "$EXPECTED" ]; then
   exit 1
 fi
 echo "✓ Multi-file copy"
+
+# Test OSC 52 sequence generation
+OSC_OUT=$(setsid sh -c 'printf "hello" | ./clip --osc52')
+EXPECTED_OSC=$(printf "\033]52;c;aGVsbG8=\a")
+if [ "$OSC_OUT" != "$EXPECTED_OSC" ]; then
+  echo "FAIL: OSC 52 sequence mismatch. Got '$OSC_OUT'" >&2
+  exit 1
+fi
+echo "✓ OSC 52 escape sequence generation"
 
 # Test Missing file error
 set +e

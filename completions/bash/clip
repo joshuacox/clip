@@ -1,0 +1,18 @@
+# bash completion for clip
+
+_clip() {
+    local cur prev words cword
+    _init_completion || return
+
+    local opts="-p -o --paste -c --clear -n --trim -s --primary --osc52 -h --help -v --version --"
+
+    if [[ "$cur" == -* ]]; then
+        COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
+        return 0
+    fi
+
+    # Fallback to standard file completion for positional arguments
+    _filedir
+}
+
+complete -F _clip clip

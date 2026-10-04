@@ -1,14 +1,15 @@
 import Link from "next/link";
 import CodeBlock from "./components/CodeBlock";
 import AdBanner from "./components/AdBanner";
+import TerminalPlayground from "./components/TerminalPlayground";
 
 export default function Home() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
       {/* 1. Hero Section */}
-      <section className="text-center max-w-4xl mx-auto mb-16">
-        <div className="inline-flex items-center gap-2 px-3 py-1 mb-6 rounded-full text-xs font-mono font-medium bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 shadow-sm">
-          <span>✨ New in v1.1.0: Native Wayland & macOS Support, Paste Mode, and POSIX Compliance</span>
+      <section className="text-center max-w-4xl mx-auto mb-12">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 mb-6 rounded-full text-xs font-mono font-medium bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 shadow-sm">
+          <span>✨ v1.2.0: OSC 52 Remote Copy, Shell Completions & Clear Buffer</span>
         </div>
 
         <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-zinc-900 dark:text-white mb-6 leading-tight">
@@ -16,7 +17,7 @@ export default function Home() {
         </h1>
 
         <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 mb-8 max-w-2xl mx-auto leading-relaxed">
-          <code className="text-emerald-600 dark:text-emerald-400 font-mono font-semibold">clip</code> is a lightweight, zero-dependency CLI wrapper that provides a seamless, unified clipboard experience across <strong>Wayland</strong>, <strong>X11</strong>, <strong>macOS</strong>, and <strong>WSL</strong>.
+          <code className="text-emerald-600 dark:text-emerald-400 font-mono font-semibold">clip</code> is a lightweight, zero-dependency CLI wrapper that provides a seamless, unified clipboard experience across <strong>Wayland</strong>, <strong>X11</strong>, <strong>macOS</strong>, <strong>WSL</strong>, and <strong>remote SSH sessions</strong>.
         </p>
 
         {/* Quick Install Box */}
@@ -35,10 +36,10 @@ export default function Home() {
             Get Started
           </a>
           <a
-            href="#reference"
+            href="#playground"
             className="px-6 py-3 rounded-xl font-medium text-sm bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-400"
           >
-            CLI Reference
+            Interactive Playground
           </a>
           <a
             href="https://github.com/joshuacox/clip"
@@ -56,6 +57,19 @@ export default function Home() {
 
       {/* Top Ad Unit */}
       <AdBanner slot="9876543210" format="auto" />
+
+      {/* Interactive Simulator Section */}
+      <section id="playground" className="py-6">
+        <div className="text-center max-w-2xl mx-auto mb-6">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white mb-2">
+            Try It Online: Interactive Terminal Playground
+          </h2>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            Simulate running <code className="font-mono text-emerald-500">clip</code> commands and inspect the live clipboard buffer in real time.
+          </p>
+        </div>
+        <TerminalPlayground />
+      </section>
 
       {/* 2. Key Features Grid */}
       <section id="features" className="py-12 border-t border-zinc-200 dark:border-zinc-800">
@@ -78,6 +92,18 @@ export default function Home() {
             </h3>
             <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
               Detects whether you are running under <strong>Wayland</strong> (<code className="font-mono">wl-copy</code>), <strong>X11</strong> (<code className="font-mono">xclip</code> or <code className="font-mono">xsel</code>), <strong>macOS</strong> (<code className="font-mono">pbcopy</code>), or <strong>WSL</strong>. No flags required.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xl mb-4 font-mono font-bold">
+              🌐
+            </div>
+            <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">
+              OSC 52 Remote Copy
+            </h3>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              Copy over plain SSH sessions and inside <code className="font-mono">tmux</code> directly to your local computer clipboard via ANSI escape sequences (<code className="font-mono">--osc52</code>). Zero forwarding required.
             </p>
           </div>
 
@@ -107,37 +133,25 @@ export default function Home() {
 
           <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xl mb-4 font-mono font-bold">
-              📁
+              🧹
             </div>
             <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">
-              Safe Multi-File Handling
+              Wipe Buffer (-c / --clear)
             </h3>
             <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              Pass one or more files directly. <code className="font-mono">clip</code> verifies all file permissions upfront before concatenating and streaming them safely to your clipboard buffer.
+              Clear your active clipboard buffer instantly using <code className="font-mono text-emerald-500">clip -c</code> to protect sensitive passwords or credentials after pasting.
             </p>
           </div>
 
           <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xl mb-4 font-mono font-bold">
-              🖱️
+              ⌨️
             </div>
             <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">
-              Primary Selection Buffer
+              Shell Completions
             </h3>
             <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              Target the middle-click mouse highlight buffer on X11 and Wayland using the <code className="font-mono text-emerald-500">-s</code> / <code className="font-mono text-emerald-500">--primary</code> flag.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xl mb-4 font-mono font-bold">
-              🛡️
-            </div>
-            <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">
-              Strict POSIX Compliance
-            </h3>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              Written cleanly for <code className="font-mono">/bin/sh</code>. Zero bashisms, zero Python, zero runtime overhead. Tested thoroughly with Debian <code className="font-mono">dash</code> and CI ShellCheck.
+              Includes native tab-completion scripts for <strong>Bash</strong>, <strong>Zsh</strong>, and <strong>Fish</strong> shells. Installed automatically with <code className="font-mono">make install</code>.
             </p>
           </div>
         </div>
@@ -186,14 +200,14 @@ export default function Home() {
           {/* Example 3 */}
           <div>
             <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">
-              3. Copying One or More Files
+              3. Remote SSH Copying with OSC 52
             </h3>
             <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-2">
-              No need to type <code className="font-mono">cat file | ...</code>. Just pass filenames directly:
+              When logged into remote cloud servers or inside Docker containers without X11 or Wayland:
             </p>
             <CodeBlock
-              code={`# Single file\nclip ~/.ssh/id_ed25519.pub\n\n# Multiple files concatenated\nclip part1.txt part2.txt part3.txt`}
-              caption="Example: Direct file copying"
+              code="cat /etc/hostname | clip --osc52"
+              caption="Example: Copy from remote server directly to local laptop clipboard"
             />
           </div>
 
@@ -251,10 +265,10 @@ export default function Home() {
                 <td className="py-3 px-4 font-mono text-emerald-500">xclip -out</td>
               </tr>
               <tr className="hover:bg-zinc-50 dark:hover:bg-zinc-900/30">
-                <td className="py-3 px-4 font-medium text-zinc-900 dark:text-white">X11 (Alternative)</td>
-                <td className="py-3 px-4 font-mono text-xs">$DISPLAY set & xsel</td>
-                <td className="py-3 px-4 font-mono text-emerald-500">xsel --input</td>
-                <td className="py-3 px-4 font-mono text-emerald-500">xsel --output</td>
+                <td className="py-3 px-4 font-medium text-zinc-900 dark:text-white">Remote SSH / Headless</td>
+                <td className="py-3 px-4 font-mono text-xs">--osc52 or SSH session</td>
+                <td className="py-3 px-4 font-mono text-emerald-500">OSC 52 ANSI escape</td>
+                <td className="py-3 px-4 font-mono text-zinc-500">N/A (terminal restricted)</td>
               </tr>
               <tr className="hover:bg-zinc-50 dark:hover:bg-zinc-900/30">
                 <td className="py-3 px-4 font-medium text-zinc-900 dark:text-white">macOS</td>
@@ -297,6 +311,26 @@ export default function Home() {
 
           <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40">
             <div className="flex items-center gap-3 mb-1">
+              <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400">-c, --clear</span>
+              <span className="text-xs px-2 py-0.5 rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono">Action</span>
+            </div>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+              Clears the active system clipboard buffer immediately.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40">
+            <div className="flex items-center gap-3 mb-1">
+              <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400">--osc52</span>
+              <span className="text-xs px-2 py-0.5 rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono">Backend</span>
+            </div>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+              Forces use of OSC 52 terminal ANSI escape sequence to copy data over SSH or inside tmux sessions.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40">
+            <div className="flex items-center gap-3 mb-1">
               <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400">-n, --trim</span>
               <span className="text-xs px-2 py-0.5 rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono">Filter</span>
             </div>
@@ -311,7 +345,7 @@ export default function Home() {
               <span className="text-xs px-2 py-0.5 rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono">Buffer</span>
             </div>
             <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              Targets the primary mouse selection buffer instead of the default clipboard buffer (supported on X11 and Wayland).
+              Targets the primary mouse selection buffer instead of the default clipboard buffer (supported on X11, Wayland, and OSC 52).
             </p>
           </div>
 
@@ -334,16 +368,6 @@ export default function Home() {
               Displays the current release version of <code className="font-mono">clip</code> and exits with code 0.
             </p>
           </div>
-
-          <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40">
-            <div className="flex items-center gap-3 mb-1">
-              <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400">--</span>
-              <span className="text-xs px-2 py-0.5 rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono">Syntax</span>
-            </div>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              Disambiguation delimiter. Tells <code className="font-mono">clip</code> to treat all subsequent arguments as filenames, even if they begin with a hyphen.
-            </p>
-          </div>
         </div>
       </section>
 
@@ -364,7 +388,7 @@ export default function Home() {
               Method 1: via Makefile (Recommended)
             </h3>
             <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-3">
-              Installs binary to <code className="font-mono">/usr/local/bin/clip</code> and man page to <code className="font-mono">/usr/local/share/man/man1/clip.1</code>.
+              Installs binary, man page, and autocompletion scripts for Bash, Zsh, and Fish.
             </p>
             <CodeBlock
               code="git clone https://github.com/joshuacox/clip.git\ncd clip\nsudo make install"
@@ -387,73 +411,28 @@ export default function Home() {
 
           <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
             <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">
-              Method 3: via CMake
+              Method 3: via Nix Flake
             </h3>
             <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-3">
-              Standard CMake out-of-source build configuration.
+              Run directly without installing, or install to your user profile.
             </p>
             <CodeBlock
-              code="mkdir build && cd build\ncmake ..\nsudo make install"
-              caption="CMake Build"
+              code="nix run github:joshuacox/clip -- --help\nnix profile install github:joshuacox/clip"
+              caption="Nix Flake"
             />
           </div>
 
           <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
             <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">
-              Method 4: via Ansible
+              Method 4: via Homebrew (macOS / Linux)
             </h3>
             <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-3">
-              Deploy across fleet servers using the included Ansible playbook.
+              Install using the included Homebrew formula.
             </p>
             <CodeBlock
-              code="ansible-playbook -i hosts clip.yaml"
-              caption="Ansible Playbook"
+              code="brew install joshuacox/clip/clip"
+              caption="Homebrew"
             />
-          </div>
-        </div>
-      </section>
-
-      {/* 7. Troubleshooting & FAQ */}
-      <section id="faq" className="py-12 border-t border-zinc-200 dark:border-zinc-800">
-        <div className="max-w-3xl mb-8">
-          <h2 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
-            Frequently Asked Questions & Troubleshooting
-          </h2>
-          <p className="text-zinc-600 dark:text-zinc-400">
-            Tips for running <code className="font-mono text-emerald-500">clip</code> across SSH, tmux, and containerized sessions.
-          </p>
-        </div>
-
-        <div className="space-y-6">
-          <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
-            <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">
-              How does clip behave over SSH sessions?
-            </h3>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              When SSHing into a remote machine with X11 forwarding enabled (<code className="font-mono">ssh -X</code> or <code className="font-mono">ssh -Y</code>), your <code className="font-mono">$DISPLAY</code> environment variable is automatically forwarded. <code className="font-mono">clip</code> detects this and sends clipboard content directly back to your local machine&apos;s X server via <code className="font-mono">xclip</code>.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
-            <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">
-              What packages do I need installed on Linux?
-            </h3>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed mb-3">
-              On Wayland compositors (GNOME, Sway, Hyprland), install <code className="font-mono text-emerald-500">wl-clipboard</code>. On X11 desktop environments, install <code className="font-mono text-emerald-500">xclip</code> or <code className="font-mono text-emerald-500">xsel</code>:
-            </p>
-            <CodeBlock
-              code={`# Debian / Ubuntu (Wayland)\nsudo apt install wl-clipboard\n\n# Debian / Ubuntu (X11)\nsudo apt install xclip\n\n# Fedora / RHEL\nsudo dnf install wl-clipboard xclip\n\n# Arch Linux\nsudo pacman -S wl-clipboard xclip`}
-              caption="Installing underlying clipboard backends"
-            />
-          </div>
-
-          <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
-            <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">
-              Can I create a dedicated &lsquo;paste&rsquo; command?
-            </h3>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              Yes! <code className="font-mono">clip</code> inspects how it is invoked. If you symlink it as <code className="font-mono">paste</code> or <code className="font-mono">clip-paste</code> (e.g. <code className="font-mono">sudo ln -s /usr/local/bin/clip /usr/local/bin/paste</code>), running <code className="font-mono">paste</code> will automatically output the clipboard content without requiring the <code className="font-mono">-p</code> flag.
-            </p>
           </div>
         </div>
       </section>
