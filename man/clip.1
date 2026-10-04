@@ -1,48 +1,88 @@
-.TH CLIP 1 "November 2025" "clip 1.0" "User Commands"
+.TH CLIP 1 "October 2026" "clip 1.1.0" "User Commands"
 .SH NAME
-clip \- copy data to the X clipboard using xclip
+clip \- cross-platform command-line clipboard utility
 .SH SYNOPSIS
 .B clip
-.RI [ file ... ]
+[\fIOPTIONS\fR] [\fIFILE\fR...]
 .SH DESCRIPTION
 The
 .B clip
-script reads data either from the specified file(s) or from standard input and copies it to the X clipboard using the
-.B xclip
-utility. It first checks that
-.B xclip
-is installed; if not, it exits with an error message.
-
-If a filename is provided and the file exists, its contents are sent to
-.B xclip
-. If no arguments are given, the script reads from standard input (when data is piped in). If neither a file nor piped data is provided, it prints an error and exits with status 1.
+script reads data from standard input or specified file(s) and copies it to the system clipboard, or outputs current clipboard data when run in paste mode.
+.PP
+It automatically detects and adapts to the active graphical session or platform, supporting:
+.IP \(bu 2
+.B Wayland
+via \fBwl-copy\fR / \fBwl-paste\fR
+.IP \(bu 2
+.B X11
+via \fBxclip\fR or \fBxsel\fR
+.IP \(bu 2
+.B macOS
+via \fBpbcopy\fR / \fBpbpaste\fR
+.IP \(bu 2
+.B WSL / Windows
+via \fBclip.exe\fR / \fBpowershell.exe\fR
 .SH OPTIONS
-None. The script determines its behavior based on the presence of arguments and whether standard input is a terminal.
+.TP
+.BR \-p ", " \-o ", " \-\-paste
+Paste current clipboard contents to standard output.
+.TP
+.BR \-n ", " \-\-trim
+Trim trailing newline character from input data before copying.
+.TP
+.BR \-s ", " \-\-primary
+Target the primary selection buffer instead of the standard clipboard (supported on X11 and Wayland).
+.TP
+.BR \-h ", " \-\-help
+Display usage summary and exit.
+.TP
+.BR \-v ", " \-\-version
+Display version information and exit.
+.TP
+.B \-\-
+Explicitly end option parsing; treat subsequent arguments as filenames even if they start with a dash.
 .SH EXAMPLES
 .TP
-Copy the contents of a file to the clipboard:
+Copy command output to clipboard:
+.nf
+$ date -I | clip
+.fi
+.TP
+Copy file contents to clipboard:
 .nf
 $ clip myfile.txt
 .fi
 .TP
-Pipe command output to the clipboard:
-.nf
-$ ls -l | clip
-.fi
-.TP
-Copy multiple files (concatenated) to the clipboard:
+Copy multiple files (concatenated) to clipboard:
 .nf
 $ clip file1.txt file2.txt
 .fi
+.TP
+Copy path without a trailing newline:
+.nf
+$ pwd | clip -n
+.fi
+.TP
+Paste clipboard contents to standard output:
+.nf
+$ clip -p
+.fi
+.TP
+Save clipboard contents directly to a file:
+.nf
+$ clip -p > output.txt
+.fi
 .SH EXIT STATUS
 .TP
-0
-Successful copy to clipboard.
+.B 0
+Success.
 .TP
-1
-Error (e.g., xclip not found, file not found, or no data provided).
+.B 1
+Error (e.g. no clipboard provider found, file not found, permission denied, or no input data provided).
 .SH SEE ALSO
+.BR wl-copy (1),
+.BR wl-paste (1),
 .BR xclip (1),
 .BR xsel (1)
 .SH AUTHOR
-Written by the clip script author.
+Written and maintained by Joshua Cox and contributors.

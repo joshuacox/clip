@@ -1,4 +1,36 @@
-- name: install
+---
+- name: Install clip clipboard utility
   hosts: clip
+  become: true
   tasks:
-  - script: bootstrap.sh
+    - name: Ensure /usr/local/bin directory exists
+      ansible.builtin.file:
+        path: /usr/local/bin
+        state: directory
+        mode: '0755'
+        owner: root
+        group: root
+
+    - name: Install clip script
+      ansible.builtin.copy:
+        src: clip
+        dest: /usr/local/bin/clip
+        mode: '0755'
+        owner: root
+        group: root
+
+    - name: Ensure man1 directory exists
+      ansible.builtin.file:
+        path: /usr/local/share/man/man1
+        state: directory
+        mode: '0755'
+        owner: root
+        group: root
+
+    - name: Install clip man page
+      ansible.builtin.copy:
+        src: man/clip.1
+        dest: /usr/local/share/man/man1/clip.1
+        mode: '0644'
+        owner: root
+        group: root

@@ -1,48 +1,205 @@
 #!/bin/sh
+set -e
 
-which xclip &> /dev/null
-if [ ! $? -eq 0 ]; then
-  XCLIP_FOUND=0
-else
-  XCLIP_FOUND=1
-fi
-which wl-copy &> /dev/null
-if [ ! $? -eq 0 ]; then
-  WLCOPY_FOUND=0
-else
-  WLCOPY_FOUND=1
-fi
+VERSION="1.1.0"
+PASTE_MODE=0
+TRIM_NEWLINE=0
+SELECTION="clipboard"
 
-if [[ ${WLCOPY_FOUND} -eq 0 && ${XCLIP_FOUND} -eq 0 ]]; then
-  echo 'no copy utility found'
-  exit 1
-fi
+# Allow invoking as 'paste' or 'clip-paste' via symlink
+case "$(basename "$0")" in
+  paste|clip-paste)
+    PASTE_MODE=1
+    ;;
+esac
 
-if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
-  if [[ ${WLCOPY_FOUND} -eq 0 ]]; then
-    echo 'wl-copy utility found'
+show_help() {
+  cat <<'EOF'
+Usage: clip [OPTIONS] [FILE...]
+Copy data to the system clipboard from files or standard input, or paste from it.
+
+Options:
+  -p, -o, --paste    Paste data from clipboard to standard output
+  -n, --trim         Trim trailing newline from input before copying
+  -s, --primary      Use primary selection buffer instead of clipboard (X11/Wayland)
+  -h, --help         Display this help message and exit
+  -v, --version      Display version information and exit
+  --                 Treat subsequent arguments as files, not options
+
+Examples:
+  date -I | clip              # Copy command output to clipboard
+  pwd | clip -n               # Copy current path without trailing newline
+  clip file.txt               # Copy contents of file.txt to clipboard
+  clip file1.txt file2.txt    # Copy concatenated files to clipboard
+  clip -p                     # Print clipboard content to stdout
+  clip -p > backup.txt        # Paste clipboard content to a file
+EOF
+}
+
+show_version() {
+  echo "clip version ${VERSION}"
+}
+
+detect_backend() {
+  if [ -n "$WAYLAND_DISPLAY" ] && command -v wl-copy >/dev/null 2>&1; then
+    BACKEND="wayland"
+  elif [ -n "$DISPLAY" ] && command -v xclip >/dev/null 2>&1; then
+    BACKEND="xclip"
+  elif [ -n "$DISPLAY" ] && command -v xsel >/dev/null 2>&1; then
+    BACKEND="xsel"
+  elif command -v pbcopy >/dev/null 2>&1; then
+    BACKEND="macos"
+  elif command -v clip.exe >/dev/null 2>&1; then
+    BACKEND="wsl"
+  elif command -v wl-copy >/dev/null 2>&1; then
+    BACKEND="wayland"
+  elif command -v xclip >/dev/null 2>&1; then
+    BACKEND="xclip"
+  elif command -v xsel >/dev/null 2>&1; then
+    BACKEND="xsel"
+  else
+    echo "clip: no supported clipboard utility found (checked: wl-copy, xclip, xsel, pbcopy, clip.exe)" >&2
     exit 1
   fi
-  COPY_CMD=wl-copy
-elif [ "$XDG_SESSION_TYPE" = "x11" ]; then
-  if [[ ${XCLIP_FOUND} -eq 0 ]]; then
-    echo 'xclip utility found'
+}
+
+copy_stream() {
+  case "$BACKEND" in
+    wayland)
+      if [ "$SELECTION" = "primary" ]; then
+        wl-copy --primary
+      else
+        wl-copy
+      fi
+      ;;
+    xclip)
+      xclip -in -selection "$SELECTION"
+      ;;
+    xsel)
+      if [ "$SELECTION" = "primary" ]; then
+        xsel --primary --input
+      else
+        xsel --clipboard --input
+      fi
+      ;;
+    macos)
+      pbcopy
+      ;;
+    wsl)
+      clip.exe
+      ;;
+  esac
+}
+
+paste_stream() {
+  case "$BACKEND" in
+    wayland)
+      if [ "$SELECTION" = "primary" ]; then
+        wl-paste --primary
+      else
+        wl-paste
+      fi
+      ;;
+    xclip)
+      xclip -out -selection "$SELECTION"
+      ;;
+    xsel)
+      if [ "$SELECTION" = "primary" ]; then
+        xsel --primary --output
+      else
+        xsel --clipboard --output
+      fi
+      ;;
+    macos)
+      pbpaste
+      ;;
+    wsl)
+      if command -v powershell.exe >/dev/null 2>&1; then
+        powershell.exe -NoProfile -Command "Get-Clipboard"
+      else
+        echo "clip: pasting on WSL requires powershell.exe" >&2
+        exit 1
+      fi
+      ;;
+  esac
+}
+
+# Parse options
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -h|--help)
+      show_help
+      exit 0
+      ;;
+    -v|--version)
+      show_version
+      exit 0
+      ;;
+    -p|-o|--paste)
+      PASTE_MODE=1
+      shift
+      ;;
+    -n|--trim)
+      TRIM_NEWLINE=1
+      shift
+      ;;
+    -s|--primary)
+      SELECTION="primary"
+      shift
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      echo "clip: unknown option '$1'" >&2
+      echo "Try 'clip --help' for more information." >&2
+      exit 1
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+detect_backend
+
+# Handle Paste Mode
+if [ "$PASTE_MODE" -eq 1 ]; then
+  if [ $# -gt 0 ]; then
+    echo "clip: cannot accept file arguments in paste mode" >&2
     exit 1
   fi
-  COPY_CMD="xclip -i -selection clipboard"
-else
-  echo "Unknown or headless session (Type: $XDG_SESSION_TYPE)"
-  exit 1
+  paste_stream
+  exit 0
 fi
 
-
-if test -n "$1"; then
-  if [ -f $1 ]; then
-    cat $@ | ${COPY_CMD}
+# Handle Copy Mode
+trim_filter() {
+  if [ "$TRIM_NEWLINE" -eq 1 ]; then
+    awk 'NR > 1 { print prev } { prev = $0 } END { printf "%s", prev }'
+  else
+    cat
   fi
-elif test ! -t 0; then
-  ${COPY_CMD}
+}
+
+if [ $# -gt 0 ]; then
+  for file in "$@"; do
+    if [ ! -e "$file" ]; then
+      echo "clip: cannot access '$file': No such file or directory" >&2
+      exit 1
+    elif [ -d "$file" ]; then
+      echo "clip: '$file': Is a directory" >&2
+      exit 1
+    elif [ ! -r "$file" ]; then
+      echo "clip: cannot read '$file': Permission denied" >&2
+      exit 1
+    fi
+  done
+  cat "$@" | trim_filter | copy_stream
+elif [ ! -t 0 ]; then
+  trim_filter | copy_stream
 else
-  echo "No data provided..."
+  echo "clip: no data provided (provide file arguments or pipe data)" >&2
   exit 1
 fi
