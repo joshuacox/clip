@@ -1,6 +1,11 @@
 # clip
 
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-10b981?style=flat-square)](https://joshuacox.github.io/clip/)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 `clip` is a lightweight, zero-dependency command-line utility for copying and pasting text to and from your system clipboard. It automatically detects your display server and environment, providing a unified clipboard interface across **Wayland**, **X11**, **macOS**, and **WSL**.
+
+📖 **Live Documentation**: [https://joshuacox.github.io/clip/](https://joshuacox.github.io/clip/)
 
 ## Features
 
@@ -97,6 +102,17 @@ Options:
   -h, --help         Display this help message and exit
   -v, --version      Display version information and exit
   --                 Treat subsequent arguments as files, not options
+```
+
+## Documentation Website
+
+The full documentation, guides, and platform compatibility details are hosted online on GitHub Pages:
+👉 **[https://joshuacox.github.io/clip/](https://joshuacox.github.io/clip/)**
+
+To run or build the static Next.js documentation site locally:
+```bash
+make site-dev    # Start local Next.js development server at http://localhost:3000
+make site-build  # Build static export to site/out/
 ```
 
 ## License
