@@ -43,7 +43,7 @@ test:
 	./tests/test_clip.sh
 
 site-build:
-	cd site && npm run build
+	cd site && pnpm run build
 
 site-dev:
-	cd site && npm run dev
+	cd site && pnpm run dev
